@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf-8"> 
+ <title>Counter</title>
+</head>
+
+<body id="body">
+
+<script src="shortcut.js" charset="utf-8"></script>
+<script language="JavaScript">
+	function leadingzero (number) {
+		return (number < 10) ? '0' + number : number;
+	}
+
+	function calculateAndShow (targetTimeInMillis, outputElement, runningIndicator) {
+		var timeLeftInSeconds = Math.floor((targetTimeInMillis - Date.now()) / 1000);
+		
+		if (timeLeftInSeconds >= 0 && runningIndicator.checked) {
+		  var m = Math.floor((timeLeftInSeconds % 3600) / 60);
+		  var s = timeLeftInSeconds % 60;
+		  var newValue =
+			/*leadingzero(m)*/ m + ':' +
+			leadingzero(s);
+		  timeLeftInSeconds--;
+		  var textColor = "white"
+		  if (timeLeftInSeconds < 60) {
+			textColor = "orange";
+		  }
+		  if (timeLeftInSeconds < 15) {
+			textColor = "red";
+		  }
+		  
+		  if (timeLeftInSeconds < 5 && (outputElement.innerHTML != newValue)) {
+			playSound('beep-08b.mp3');
+		  }
+		  
+		  outputElement.innerHTML = newValue;
+		  
+		  //outputElement.style.color = textColor;
+		  document.getElementById("body").style.background = textColor;
+		  
+		  setTimeout(calculateAndShow, 50, targetTimeInMillis, outputElement, runningIndicator);
+
+		} else {
+		  outputElement.innerHTML="THANKS"
+
+		  if (timeLeftInSeconds <= 0) {
+				playSound('telephone-ring-01a.mp3');
+			}
+
+		  runningIndicator.checked = false;
+			document.getElementById("setButton").disabled = false;
+			document.getElementById("startButton").disabled = false;
+			document.getElementById("runningIndicator").disabled = true;
+		  return false;
+		}
+	}
+	
+	function playSound(fileName) {
+		if (document.getElementById("soundIndicator").checked) {
+				var audio = new Audio(fileName);
+				audio.play();
+
+		}
+	}
+	
+	var counterElementId = "counter1";
+	var durationInMinsElementId = "durationInMin";
+	var durationInSecsElementId = "durationInSec";
+	
+	function reset() {
+		var mins = readInt(durationInMinsElementId);
+		var secs = readInt(durationInSecsElementId);
+		var outputElement = document.getElementById(counterElementId);
+		outputElement.innerHTML = mins + ":" + leadingzero(secs);
+		
+		document.getElementById("body").style.background = "white";
+	}
+	
+	function readInt(elementId) {
+		var value = document.getElementById(elementId).value;
+		if (value == '') {
+			value = '0';
+		}
+		
+		return parseInt(value);
+	}
+	
+	function startCountdown () {
+		
+		var mins = readInt(durationInMinsElementId);
+		var secs = readInt(durationInSecsElementId);
+		var outputElement = document.getElementById(counterElementId);
+		var runningIndicator = document.getElementById("runningIndicator");
+		if (runningIndicator.checked) {
+			alert("Countdown läuft. Bitte erst stoppen indem in der Checkbox 'läuft' das Häckchen entfernt wird.");
+			return false;
+		}
+		
+		runningIndicator.checked = true;
+		runningIndicator.disabled = false;
+		
+		document.getElementById("setButton").disabled = true;
+		document.getElementById("startButton").disabled = true;
+		
+		var targetTimeInMillis = Date.now() + ((mins * 60 + secs) * 1000);
+		calculateAndShow(targetTimeInMillis, outputElement, runningIndicator);
+	}
+
+  shortcut.add("0",function() {
+    document.getElementById("runningIndicator").checked = false;
+  });
+  shortcut.add("F5",function() {
+    document.getElementById("runningIndicator").checked = false;
+  });
+
+  shortcut.add("2",function() {
+    document.getElementById("runningIndicator").checked = false;
+    document.getElementById("durationInMin").value = 2;
+    document.getElementById("durationInSec").value = 0;
+    this.reset();
+    this.startCountdown();
+  });
+
+  shortcut.add("pageup",function() {
+    document.getElementById("runningIndicator").checked = false;
+    document.getElementById("durationInMin").value = 2;
+    document.getElementById("durationInSec").value = 0;
+    this.reset();
+    this.startCountdown();
+  });
+
+  shortcut.add("3",function() {
+    document.getElementById("runningIndicator").checked = false;
+    document.getElementById("durationInMin").value = 3;
+    document.getElementById("durationInSec").value = 0;
+    this.reset();
+    this.startCountdown();
+  });
+
+  shortcut.add("pagedown",function() {
+    document.getElementById("runningIndicator").checked = false;
+    document.getElementById("durationInMin").value = 3;
+    document.getElementById("durationInSec").value = 0;
+    this.reset();
+    this.startCountdown();
+  });
+
+</script>
+
+
+<p style="text-align:center;">
+<table border-width="3" width="100%">
+<tr>
+<td>
+duration: 
+	<input type="number" value="3" step="1" min="1" id="durationInMin"/> min
+	<input type="number" value="00" step="1" min="1" max="59" id="durationInSec"/> sec
+	<input type="checkbox" id="soundIndicator" checked>sound</input>
+<button type="button" onclick="reset()" id="setButton">Set</button>
+<button type="button" onclick="startCountdown()" id="startButton">Set & Start!</button>
+<input type="checkbox" id="runningIndicator" disabled="true">running</input>
+</td>
+</tr>
+<tr><td>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</td></tr>
+
+<tr>
+<td style="font-size:400pt; font-color:#ffffff; font-family:SansSerif,Arial; text-align:center; font-weight=bold;" id="counter1">
+ 00:00
+</td>
+</tr>
+</table>
+
+</p>
+</body>
+</html>
